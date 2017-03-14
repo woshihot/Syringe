@@ -1,0 +1,43 @@
+ext {
+    android = [
+            compileSdkVersion       : 25,
+            buildToolsVersion       : "25.0.1",
+            packageName             : "com.isesol.zhj.cloudfactory",
+            minSdkVersion           : 14,
+            targetSdkVersion        : 25,
+            androidSupportSdkVersion: "25.0.1",
+            debugVersionCode        : 1,
+            debugVersionName        : "1.0.1",
+            releaseVersionCode      : 1,
+            releaseVersionName      : "1.0.1",
+            testInstrumentationRunne: "android.support.test.runner.AndroidJUnitRunner"
+    ]
+    version = [
+            dagger2     : "2.9",
+            retrofit    : "2.1.0",
+            okhttp      : "3.5.0",
+            butterknife : "8.5.1",
+            rxpermission: "0.9.1",
+            rxjava      : "1.2.6",
+            rxandroid   : "1.2.1",
+            rxlifecycle : "1.0",
+            timber      : '4.5.1'
+    ]
+    depend = [
+            "appcompat"                 : "com.android.support:appcompat-v7:${android["androidSupportSdkVersion"]}",
+            "dagger2"                   : "com.google.dagger:dagger:${version["dagger2"]}",
+            "dagger2-compiler"          : "com.google.dagger:dagger-compiler:${version["dagger2"]}",
+            "retrofit"                  : "com.squareup.retrofit2:retrofit:${version["retrofit"]}",
+            "retrofit-adapter-rxjava"   : "com.squareup.retrofit2:adapter-rxjava:${version["retrofit"]}",
+            "retrofit-converter-scalars": "com.squareup.retrofit2:converter-scalars:${version["retrofit"]}",
+            "okhttp"                    : "com.squareup.okhttp3:okhttp:${version["okhttp"]}",
+            "butterknife"               : "com.jakewharton:butterknife:${version["butterknife"]}",
+            "butterknife-compiler"      : "com.jakewharton:butterknife-compiler:${version["butterknife"]}",
+            "rxpermission"              : "com.tbruyelle.rxpermissions:rxpermissions:${version["rxpermission"]}@aar",
+            "rxjava"                    : "io.reactivex:rxjava:${version["rxjava"]}",
+            "rxandroid"                 : "io.reactivex:rxandroid:${version["rxandroid"]}",
+            "rxlifecycle"               : "com.trello:rxlifecycle-android:${version["rxlifecycle"]}",
+            "rxlifecycle-components"    : "com.trello:rxlifecycle-components:${version["rxlifecycle"]}",
+            "timber"                    : "com.jakewharton.timber:timber:${version["timber"]}"
+    ]
+}
