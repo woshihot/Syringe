@@ -1,6 +1,4 @@
 package com.zhj.example;
-import android.util.Log;
-
 import com.zhj.example.service.ServiceManager;
 import com.zhj.syringe.core.BaseHttpHolder;
 import com.zhj.syringe.core.request.BaseRequestParam;
@@ -16,12 +14,9 @@ public class HttpHolder extends BaseHttpHolder {
         super(serviceManager);
     }
 
-
     @Override
     public void post(boolean isSerial, ObservableFormat observableFormat, BaseRequestParam... baseRequestParams) {
-
         super.post(isSerial, observableFormat, baseRequestParams);
-        Log.d("HttpHolder", String.valueOf(System.currentTimeMillis()));
     }
 
     public static class PostBuilder extends BasePostBuilder<PostBuilder> {
@@ -33,7 +28,10 @@ public class HttpHolder extends BaseHttpHolder {
 
         @Override
         public void post() {
-
+            /*
+            * you can do something in here to judge if post
+            * just like network check、set default ObservableFormat
+            * */
             super.post();
 
         }
