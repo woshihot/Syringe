@@ -1,8 +1,0 @@
-<resources>
-
-    <style name="AppTheme" parent="BaseTheme">
-        <item name="android:windowDrawsSystemBarBackgrounds">false</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-    </style>
-
-</resources>
