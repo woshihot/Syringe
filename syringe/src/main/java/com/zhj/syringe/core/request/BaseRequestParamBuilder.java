@@ -32,42 +32,42 @@ public abstract class BaseRequestParamBuilder<T extends BaseRequestParamBuilder>
     protected HttpRequestFormat mHttpRequestFormat;
 
 
-    public String getUrl() {
+    String getUrl() {
 
         return url;
     }
 
-    public Map<String, Object> getParam() {
+    Map<String, Object> getParam() {
 
         return param;
     }
 
-    public BaseHttpSubscriber getHttpSubscriber() {
+    BaseHttpSubscriber getHttpSubscriber() {
 
         return mHttpSubscriber;
     }
 
-    public CascadeParamInterface getCascadeParamInterface() {
+    CascadeParamInterface getCascadeParamInterface() {
 
         return mCascadeParamInterface;
     }
 
-    public HttpResponseFormat getHttpResponseFormat() {
+    HttpResponseFormat getHttpResponseFormat() {
 
         return mHttpResponseFormat;
     }
 
-    public HttpRequestFormat getHttpRequestFormat() {
+    HttpRequestFormat getHttpRequestFormat() {
 
         return mHttpRequestFormat;
     }
 
-    public Map getHeaders() {
+    Map getHeaders() {
 
         return headers;
     }
 
-    public Map getPaths() {
+    Map getPaths() {
 
         return paths;
     }

@@ -8,7 +8,6 @@ public abstract class BaseHttpSubscriber extends Subscriber<HttpBean> {
 
     @Override
     public void onCompleted() {
-
     }
 
     @Override

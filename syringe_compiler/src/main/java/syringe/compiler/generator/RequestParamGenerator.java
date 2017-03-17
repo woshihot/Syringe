@@ -262,7 +262,7 @@ public class RequestParamGenerator extends FileBox {
             }
             if (paramModel.getAnnotationType() == AnnotationType.BODY) hasBody = true;
         }
-        return hasBody || (hasOneParam && !hasSecondParam);
+        return paramModels.isEmpty() || hasBody || !hasSecondParam;
     }
 
 }

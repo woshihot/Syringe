@@ -1,17 +1,16 @@
 package com.zhj.example.service;
 
-import java.util.List;
 import java.util.Map;
 
-import okhttp3.MultipartBody;
+import retrofit2.http.Field;
 import retrofit2.http.FieldMap;
-import retrofit2.http.Headers;
-import retrofit2.http.Multipart;
+import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.GET;
 import retrofit2.http.POST;
-import retrofit2.http.Part;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
+import retrofit2.http.QueryMap;
 import rx.Observable;
-import syringe.DefaultPost;
 import syringe.Service;
 /**
  * Created by Fred Zhao on 2017/3/2.
@@ -19,13 +18,33 @@ import syringe.Service;
 @Service
 public interface IService {
 
-    @POST("cgi")
-    @DefaultPost
-    @Headers("Content-Type:application/json; charset=UTF-8")
-    Observable<String> call(@Query("testQuery") String query, @FieldMap Map fieldMap, @Part("testField") String
-            field);
+    public static final String ISERVICE_NAME = "iService";
 
-    @Multipart
-    @POST("https://oncallservice.i5sesol.com/file/fileUpload")
-    Observable<String> upload(@Part List<MultipartBody.Part> files);
+    @GET(ISERVICE_NAME + "/get")
+    Observable<String> get();
+
+    @POST(ISERVICE_NAME + "/post")
+    Observable<String> post();
+
+    @GET(ISERVICE_NAME + "/query")
+    Observable<String> query(@Query("query") String query);
+
+    @GET(ISERVICE_NAME + "/querymap")
+    Observable<String> queryMap(@QueryMap Map<String, String> queryMap);
+
+    @POST(ISERVICE_NAME + "/field")
+    @FormUrlEncoded
+    Observable<String> field(@Field("field") String field);
+
+    @POST(ISERVICE_NAME + "/fieldmap")
+    @FormUrlEncoded
+    Observable<String> fieldMap(@FieldMap Map<String, String> fieldMap);
+
+
+    @POST(ISERVICE_NAME + "/path/{pathone}")
+    Observable<String> path(@Path("pathone") String one);
+
+    @POST(ISERVICE_NAME + "/path/{pathone}/{pathtwo}")
+    Observable<String> paths(@Path("pathone") String one, @Path("pathtwo") String two);
+
 }

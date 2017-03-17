@@ -6,11 +6,8 @@ import android.util.Log;
 
 import com.zhj.example.service.IServiceType;
 import com.zhj.example.service.RequestParam;
-import com.zhj.syringe.core.request.BaseRequestParam;
-import com.zhj.syringe.core.request.CascadeParamInterface;
 import com.zhj.syringe.core.request.HttpRequestFormat;
 import com.zhj.syringe.core.request.ObservableFormat;
-import com.zhj.syringe.core.response.HttpBean;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -32,18 +29,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Map<String, Object> obj = new HashMap<>();
-        obj.put("cmd", "support/app/version/current");
-        Map<String, Object> param = new HashMap<>();
-        param.put("appCode", "isesol-rentPlatform");
-        param.put("channel", "");
-        param.put("appType", "android");
-        obj.put("parameters", param);
+        Map<String, Object> queryMap = new HashMap<>();
+        queryMap.put("query", "zero");
+        queryMap.put("queryOne", "one");
+        queryMap.put("queryTwo", "two");
 
-        String path1 = "/storage/emulated/0/Pictures/IMG_20161017_135420.jpg";
-        Map<String, Object> fileObj = new HashMap<>();
-        fileObj.put("iToken", "aa7c7873-0ff4-4de1-966f-bd01960810c1");
-        fileObj.put("file", new File(path1));
+        Map<String, Object> fieldMap = new HashMap<>();
+        fieldMap.put("field", "zero");
+        fieldMap.put("fieldOne", "one");
+        fieldMap.put("fieldTwo", "two");
         new HttpHolder.PostBuilder(Client.getInstance().getHttpHolder())
                 .parallel()
                 .observableFormat(new ObservableFormat() {
@@ -51,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public Observable format(Observable observable, int position) {
 
+                        Log.d("MainActivity", position +Thread.currentThread().getName());
                         return observable;
                     }
 
@@ -66,22 +61,32 @@ public class MainActivity extends AppCompatActivity {
                         Log.d("MainActivity", "end loading");
                     }
                 })
-                .addRequest(RequestParam.newBuilder().param(obj).cascade(new CascadeParamInterface() {
-
-                    @Override
-                    public BaseRequestParam getCascadeParam(BaseRequestParam defaultParam, HttpBean bean) {
-                        return defaultParam;
-                    }
-                }).build())
-                .addRequest(RequestParam.newBuilder().param(fileObj).requestFormat(new HttpRequestFormat() {
+                .addRequest(RequestParam.newBuilder().service(IServiceType.CLASS).post().build())
+                .addRequest(RequestParam.newBuilder().service(IServiceType.CLASS).get().build())
+                .addRequest(RequestParam.newBuilder().param(queryMap).requestFormat(new HttpRequestFormat() {
 
                     @Override
                     public Object formatApiParam(Map param) {
 
-                        return configFileParam(param);
+                        return param.get("query");
                     }
-                }).service(IServiceType.CLASS).upload().build())
-                .post();
+                }).service(IServiceType.CLASS).query().build())
+                .addRequest(RequestParam.newBuilder().param(queryMap).service(IServiceType.CLASS).queryMap().build())
+                .addRequest(RequestParam.newBuilder().param(fieldMap).requestFormat(new HttpRequestFormat() {
+
+                    @Override
+                    public Object formatApiParam(Map param) {
+
+                        return param.get("field");
+                    }
+                }).service(IServiceType.CLASS)
+                        .field().build())
+                .addRequest(RequestParam.newBuilder().param(fieldMap).service(IServiceType.CLASS).fieldMap().build())
+                .addRequest(RequestParam.newBuilder().path("pathone", "pathone").service(IServiceType.CLASS).path()
+                        .build())
+                .addRequest(RequestParam.newBuilder().path("pathone", "pathone").path("pathtwo", "pathtwo").service
+                        (IServiceType.CLASS).paths().build())
+                .serial().post();
     }
 
     private List<MultipartBody.Part> configFileParam(Map<String, Object> param) {

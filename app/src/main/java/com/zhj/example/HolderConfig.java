@@ -26,7 +26,7 @@ public class HolderConfig extends BaseHttpHolderConfiguration {
             @Override
             public Object formatApiParam(Map param) {
 
-                return JSON.toJSONString(param);
+                return param;
             }
         };
     }

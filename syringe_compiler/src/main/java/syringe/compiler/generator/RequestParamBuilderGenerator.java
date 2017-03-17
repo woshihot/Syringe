@@ -102,24 +102,24 @@ public class RequestParamBuilderGenerator extends FileBox {
         MethodSpec.Builder buildMethod = MethodSpec.methodBuilder("build").addModifiers(Modifier.PUBLIC).addAnnotation
                 (Override.class).returns(ClassName.bestGuess(Constants.REQUEST_PARENT_PACKAGE.concat(".").concat
                 (Constants.REQUEST_PARAM_PARENT_NAME)));
-        buildMethod.addStatement("if (null == getParam()) param(new $T<String,Object>())", ClassName.get(HashMap
+        buildMethod.addStatement("if (null == param) param(new $T<String,Object>())", ClassName.get(HashMap
                 .class));
-        buildMethod.addStatement("if (null == getCascadeParamInterface()) cascade(new $T())", ClassName.bestGuess
+        buildMethod.addStatement("if (null == mCascadeParamInterface) cascade(new $T())", ClassName.bestGuess
                 (CascadeParamInterfaceClassPath.concat(".DefaultCascadeParamImpl")));
 
-        buildMethod.addStatement("if (null == getHttpRequestFormat()) requestFormat($T.getInstance().$L)",
+        buildMethod.addStatement("if (null == mHttpRequestFormat) requestFormat($T.getInstance().$L)",
                 baseConfigClassName
                         (mConfigClassModel), Constants.BASE_FIELD_REQUEST_FORMAT);
-        buildMethod.addStatement("if (null == getHttpResponseFormat()) responseFormat($T.getInstance().$L)",
+        buildMethod.addStatement("if (null == mHttpResponseFormat) responseFormat($T.getInstance().$L)",
                 baseConfigClassName
                 (mConfigClassModel), Constants.BASE_FIELD_RESPONSE_FORMAT);
-        buildMethod.addStatement("if (null == getHttpSubscriber()) subscriber($T.getInstance().$L)", baseConfigClassName
+        buildMethod.addStatement("if (null == mHttpSubscriber) subscriber($T.getInstance().$L)", baseConfigClassName
                 (mConfigClassModel), Constants.BASE_FIELD_SUBSCRIBER);
-        buildMethod.addStatement("if (null == getMethodType()) method($T.$L)", MethodEnumTypeGenerator
+        buildMethod.addStatement("if (null == mMethodType) method($T.$L)", MethodEnumTypeGenerator
                 .configMethodTypeClassName(getClassName().packageName()), getDefaultService());
-        buildMethod.addStatement("if (null == getPaths()) paths(new $T<String,Object>())", ClassName.get(HashMap
+        buildMethod.addStatement("if (null == paths) paths(new $T<String,Object>())", ClassName.get(HashMap
                 .class));
-        buildMethod.addStatement("if (null == getHeaders()) headers(new $T<String,String>())", ClassName.get(HashMap
+        buildMethod.addStatement("if (null == headers) headers(new $T<String,String>())", ClassName.get(HashMap
                 .class));
         buildMethod.addStatement("return new $T(this)", RequestParamGenerator.configRequestParamClassName(getClassName
                 ().packageName()));

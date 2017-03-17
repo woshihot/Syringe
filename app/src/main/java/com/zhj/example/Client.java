@@ -3,6 +3,7 @@ import com.zhj.example.service.ServiceManager;
 import com.zhj.example.service.TService;
 
 import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
@@ -12,7 +13,8 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class Client {
 
-    public static final String BASE_URL = "http://polls.apiblueprint.org/";
+    public static final String BASE_URL = "https://private-83a99d-syringetest.apiary-mock.com/";
+
 
     private static Client instance;
 
@@ -26,7 +28,7 @@ public class Client {
 
     public Client() {
 
-        OkHttpClient mOkHttpClient = new OkHttpClient.Builder().build();
+        OkHttpClient mOkHttpClient = new OkHttpClient.Builder().addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)).build();
         Retrofit mRetrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
@@ -42,4 +44,5 @@ public class Client {
 
         return mHttpHolder;
     }
+
 }

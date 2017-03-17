@@ -2,7 +2,9 @@ package com.zhj.syringe.core;
 
 import com.zhj.syringe.core.request.BaseRequestParam;
 import com.zhj.syringe.core.request.ObservableFormat;
+import com.zhj.syringe.core.response.BaseHttpSubscriber;
 import com.zhj.syringe.core.response.HttpBean;
+import com.zhj.syringe.core.response.HttpResponseFormat;
 import com.zhj.syringe.core.service.BaseServiceManager;
 
 import java.util.HashSet;
@@ -10,7 +12,7 @@ import java.util.LinkedHashSet;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 /**
  * Created by Fred Zhao on 2017/2/28.
@@ -44,43 +46,104 @@ public abstract class BaseHttpHolder {
             baseRequestParam, final BaseRequestParam... baseRequestParams) {
 
         final int length = baseRequestParams.length;
-        final Observable observable = baseRequestParam.getObservable(mBaseServiceManager);
-        observableFormat.format(observable.subscribeOn(Schedulers.io()), i).subscribeOn(AndroidSchedulers.mainThread
-                ()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<Object>() {
+        Observable observable = baseRequestParam.getObservable(mBaseServiceManager);
+        observableFormat.format(observable.subscribeOn(Schedulers.newThread()), i).subscribeOn(AndroidSchedulers
+                .mainThread()).observeOn(AndroidSchedulers.mainThread()).map(new BaseFormatFunc1(baseRequestParam
+                .getHttpResponseFormat())).subscribe(new SerialSubscriberProxy(baseRequestParam, observableFormat,
+                baseRequestParams, length, i));
+    }
 
-            @Override
-            public void call(Object s) {
+    class BaseFormatFunc1 implements Func1<Object, HttpBean> {
 
-                HttpBean backBean = baseRequestParam.getHttpResponseFormat().formatHttpBean(s);
-                if (length > i + 1) {
-                    method(i + 1, observableFormat, baseRequestParam.getCascadeParamInterface().getCascadeParam
-                            (baseRequestParams[ i + 1 ], backBean), baseRequestParams);
-                } else {
-                    observableFormat.beforeEnd();
-                }
-                baseRequestParam.getHttpSubscriber().onNext(backBean);
-            }
-        });
+        private HttpResponseFormat httpResponseFormat;
+
+        public BaseFormatFunc1(HttpResponseFormat httpResponseFormat) {
+
+            this.httpResponseFormat = httpResponseFormat;
+        }
+
+        @Override
+        public HttpBean call(Object o) {
+
+            return httpResponseFormat.formatHttpBean(o);
+        }
+    }
+
+    class InsteadSubscriberProxy extends BaseHttpSubscriber {
+
+        BaseRequestParam contentRequestParam;
+
+        ObservableFormat observableFormat;
+
+        public InsteadSubscriberProxy(BaseRequestParam contentRequestParam, ObservableFormat observableFormat) {
+
+            this.contentRequestParam = contentRequestParam;
+            this.observableFormat = observableFormat;
+        }
+
+        @Override
+        public void onNext(HttpBean httpBean) {
+
+            contentRequestParam.getHttpSubscriber().onNext(httpBean);
+        }
+    }
+
+    class SerialSubscriberProxy extends InsteadSubscriberProxy {
+
+        BaseRequestParam[] requestParams;
+
+        int i;
+
+        int length;
+
+        public SerialSubscriberProxy(BaseRequestParam contentRequestParam, ObservableFormat observableFormat,
+                                     BaseRequestParam[] requestParams, int length, int i) {
+
+            super(contentRequestParam, observableFormat);
+            this.requestParams = requestParams;
+            this.i = i;
+            this.length = length;
+        }
+
+        @Override
+        public void onNext(HttpBean httpBean) {
+
+            if (length > i + 1)
+                method(i + 1, observableFormat, this.contentRequestParam.getCascadeParamInterface().getCascadeParam
+                        (this.requestParams[ i + 1 ], httpBean), this.requestParams);
+            else observableFormat.beforeEnd();
+
+            super.onNext(httpBean);
+        }
+    }
+
+    class ParallelSubscriberProxy extends InsteadSubscriberProxy {
+
+        ParallelRequestFinish parallelRequestFinish;
+
+        public ParallelSubscriberProxy(BaseRequestParam contentRequestParam, ObservableFormat observableFormat,
+                                       ParallelRequestFinish parallelRequestFinish) {
+
+            super(contentRequestParam, observableFormat);
+            this.parallelRequestFinish = parallelRequestFinish;
+        }
+
+        @Override
+        public void onNext(HttpBean httpBean) {
+
+            super.onNext(httpBean);
+            parallelRequestFinish.requestFinish();
+            if (parallelRequestFinish.isLast()) observableFormat.beforeEnd();
+        }
     }
 
     private void method(int i, final ObservableFormat observableFormat, final BaseRequestParam baseRequestParam, final
-    ParallelRequestFinish
-            parallelRequestFinish) {
+    ParallelRequestFinish parallelRequestFinish) {
 
         observableFormat.format(baseRequestParam.getObservable(mBaseServiceManager).subscribeOn(Schedulers.io())
-                , i).subscribeOn(AndroidSchedulers.mainThread()).observeOn(AndroidSchedulers.mainThread()).subscribe
-                (new Action1<Object>() {
-
-                    @Override
-                    public void call(Object s) {
-
-                        HttpBean backBean = baseRequestParam.getHttpResponseFormat().formatHttpBean(s);
-                        parallelRequestFinish.requestFinish();
-                        if (parallelRequestFinish.isLast()) observableFormat.beforeEnd();
-                        baseRequestParam.getHttpSubscriber().onNext(backBean);
-
-                    }
-                });
+                , i).subscribeOn(AndroidSchedulers.mainThread()).observeOn(AndroidSchedulers.mainThread()).map(new
+                BaseFormatFunc1(baseRequestParam.getHttpResponseFormat()))
+                .subscribe(new ParallelSubscriberProxy(baseRequestParam, observableFormat, parallelRequestFinish));
     }
 
     class ParallelRequestFinish {
