@@ -40,4 +40,14 @@ ext {
             "rxlifecycle-components"    : "com.trello:rxlifecycle-components:${version["rxlifecycle"]}",
             "timber"                    : "com.jakewharton.timber:timber:${version["timber"]}"
     ]
+
+    ext {
+        jintrayName = 'fredzhaowoshihot'
+        groupId = 'com.zhy'
+        uploadName = 'Syringe'
+        publishVersion = '1.0.0'
+        desc = 'a http holder'
+        website = 'https://github.com/woshihot/Syringe'
+        licences = ['Apache-2.0']
+    }
 }

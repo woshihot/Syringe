@@ -19,16 +19,12 @@ public abstract class BaseRequestParamBuilder<T extends BaseRequestParamBuilder>
 
     protected Map<String, Object> paths;
 
-    //客户端处理
     protected BaseHttpSubscriber mHttpSubscriber;
 
-    //配置下一项的请求
     protected CascadeParamInterface mCascadeParamInterface;
 
-    //string转bean规则
     protected HttpResponseFormat mHttpResponseFormat;
 
-    //配置上传参数规则
     protected HttpRequestFormat mHttpRequestFormat;
 
 

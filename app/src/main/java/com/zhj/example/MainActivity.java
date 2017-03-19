@@ -39,13 +39,12 @@ public class MainActivity extends AppCompatActivity {
         fieldMap.put("fieldOne", "one");
         fieldMap.put("fieldTwo", "two");
         new HttpHolder.PostBuilder(Client.getInstance().getHttpHolder())
-                .parallel()
                 .observableFormat(new ObservableFormat() {
 
                     @Override
                     public Observable format(Observable observable, int position) {
 
-                        Log.d("MainActivity", position +Thread.currentThread().getName());
+                        Log.d("MainActivity", position + Thread.currentThread().getName());
                         return observable;
                     }
 

@@ -42,16 +42,16 @@ public abstract class BaseRequestParam {
     private Map<String, Object> paths;
 
 
-    //客户端处理
+    //the back subscriber for clent
     protected BaseHttpSubscriber mHttpSubscriber;
 
-    //配置下一项的请求
+    //how to change the next requestParam
     private CascadeParamInterface mCascadeParamInterface;
 
-    //string转bean规则
+    //format from response object to httpbean
     private HttpResponseFormat mHttpResponseFormat;
 
-    //配置上传参数规则
+    //change the map param to your request param
     private HttpRequestFormat mHttpRequestFormat;
 
 

@@ -1,5 +1,5 @@
 apply plugin: 'java'
-
+apply plugin: 'com.novoda.bintray-release'
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.squareup:javapoet:1.7.0'
@@ -9,3 +9,13 @@ dependencies {
 
 sourceCompatibility = "1.7"
 targetCompatibility = "1.7"
+publish {
+    artifactId = 'syringe-compiler'
+    userOrg = rootProject.jintrayName
+    groupId = rootProject.groupId
+    uploadName = rootProject.uploadName
+    publishVersion = rootProject.publishVersion
+    desc = rootProject.desc
+    website = rootProject.website
+    licences = rootProject.licences
+}
