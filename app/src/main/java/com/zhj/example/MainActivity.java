@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public Observable format(Observable observable, int position) {
 
-                        Log.d("MainActivity", position + Thread.currentThread().getName());
                         return observable;
                     }
 

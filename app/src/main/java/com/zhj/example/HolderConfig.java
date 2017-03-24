@@ -10,12 +10,9 @@ import com.zhj.syringe.core.response.HttpBean;
 import com.zhj.syringe.core.response.HttpResponseFormat;
 
 import java.util.Map;
-
-import syringe.HttpHolerConfig;
 /**
  * Created by Fred Zhao on 2017/3/6.
  */
-@HttpHolerConfig
 public class HolderConfig extends BaseHttpHolderConfiguration {
 
     @Override

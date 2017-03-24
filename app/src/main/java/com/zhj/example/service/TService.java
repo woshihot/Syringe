@@ -1,5 +1,7 @@
 package com.zhj.example.service;
 
+import retrofit2.http.GET;
+import retrofit2.http.Url;
 import rx.Observable;
 import syringe.Service;
 /**
@@ -7,6 +9,8 @@ import syringe.Service;
  */
 @Service
 public interface TService {
+    public static final String GET_RESP="https://api.github.com/repos/woshihot/Syringe";
 
-    Observable<String> test();
+    @GET
+    Observable<String> getStarCount(@Url String url);
 }

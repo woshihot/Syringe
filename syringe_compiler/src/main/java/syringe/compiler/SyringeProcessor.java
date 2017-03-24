@@ -73,7 +73,7 @@ public class SyringeProcessor extends AbstractProcessor {
         }
         return true;
     }
-    
+
 
     private void parseEnvironment(RoundEnvironment roundEnv) {
 
@@ -125,9 +125,8 @@ public class SyringeProcessor extends AbstractProcessor {
     private void checkConfig(Set<? extends Element> configElements) {
 
         if (null != configElements) {
-            printCheck(false, null, !configElements.isEmpty(), "you can set a default " +
-                    "HolderConfig");
-            printCheck(false, null, configElements.size() == 1, "you can set only one default HolderConfig");
+            if (configElements.isEmpty()) printCheck(false, null, false, "you can set a default HolderConfig");
+            else printCheck(false, null, configElements.size() == 1, "you can set only one default HolderConfig");
             for (Element element : configElements) {
                 printCheck(true, element, Preconditions.checkClass(element), "%s must be a class", element
                         .getSimpleName().toString());
