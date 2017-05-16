@@ -31,7 +31,6 @@ public abstract class FileBox {
     }
 
     public void setClassName(ClassName className) {
-
         mClassName = className;
     }
 

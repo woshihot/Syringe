@@ -1,4 +1,5 @@
 package syringe.compiler;
+import java.util.regex.Pattern;
 /**
  * Created by Fred Zhao on 2017/3/1.
  */
@@ -17,9 +18,13 @@ public class Constants {
 
     public static final String SERVICE_MANAGER_CLASS_NAME = "ServiceManager";
 
-    public static final String BASE_CONFIG_PATH = "com.zhj.syringe.core.BaseHttpHolderConfiguration";
+    public static final String SYRINGE_PACKAGE = "com.zhj.syringe";
 
-    public static final String BASE_CONFIG_HOLDER_PATH = "com.zhj.syringe.core.DefaultConfigHolder";
+    public static final String BASE_CONFIG_PATH = SYRINGE_PACKAGE.concat(".core.BaseHttpHolderConfiguration");
+
+    public static final String BASE_CONFIG_HOLDER_PATH = SYRINGE_PACKAGE.concat(".core.DefaultConfigHolder");
+
+    public static final String BASE_POST_BUILDER_PATH = SYRINGE_PACKAGE.concat(".core.BaseHttpHolder.BasePostBuilder");
 
     public static String methodTypeConfig(String packageName, String className, String methodName) {
 
@@ -58,11 +63,18 @@ public class Constants {
         return packageName.replace(".", "_").concat("_").concat(className);
     }
 
-    public static String addBrackets(String content){
+    public static String addBrackets(String content) {
+
         return "(".concat(content).concat(")");
     }
 
-    public static final String SERVICE_MANAGER_PARENT_PACKAGE = "com.zhj.syringe.core.service";
+    public static String addAngleBracket(String content) {
+
+        return "<".concat(content).concat(">");
+    }
+
+
+    public static final String SERVICE_MANAGER_PARENT_PACKAGE = SYRINGE_PACKAGE.concat(".core.service");
 
     public static final String SERVICE_MANAGER_PARENT_NAME = "BaseServiceManager";
 
@@ -70,7 +82,7 @@ public class Constants {
 
     public static final String REQUEST_PARAM_BUILDER_NAME = "RequestParamBuilder";
 
-    public static final String REQUEST_PARENT_PACKAGE = "com.zhj.syringe.core.request";
+    public static final String REQUEST_PARENT_PACKAGE = SYRINGE_PACKAGE.concat(".core.request");
 
     public static final String REQUEST_PARAM_PARENT_NAME = "BaseRequestParam";
 
@@ -85,6 +97,17 @@ public class Constants {
 
     public static final String BASE_FIELD_SUBSCRIBER = "baseHttpSubscriber";
 
+    public static final String ATTR_ACTIONS_MAP_NAME = "AttrActionMap";
+
+    public static final String ATTR_ACTION_PARSE_NAME="AttrActionParse";
+
+    public static final String UNBIND_ATTR_ACTION_NAME="UnbindAction";
+
+    public static final String ATTR_BIND_PARSE_NAME=SYRINGE_PACKAGE.concat(".core.attrs.ActionMapParse");
+
+    public static final String REBIND_ACTION_NAME = SYRINGE_PACKAGE.concat(".core.attrs.RebindAttrAction");
+
+    public static final String BA_NAME = "BA";
 
     public static final String BODY_ANNOTATION = "Body";
 
@@ -109,4 +132,52 @@ public class Constants {
     public static final String PATH_ANNOTATION = "Path";
 
 
+    private static final String PATTERN_M = "m[A-Z]([A-Z_0-9a-z]+|)";
+
+    public static String getTrulyFieldName(String fieldName) {
+
+        if (isMField(fieldName)) {
+            if (fieldName.length() > 1) {
+                String f = fieldName.substring(1);
+                return lowerFirstLetter(f);
+            }
+        }
+        return fieldName;
+    }
+
+    public static String getTrulyMethodName(String methodName) {
+
+        if (methodName.startsWith("set")) {
+            if (methodName.length() > 3) {
+                String m = methodName.substring(3);
+
+                return lowerFirstLetter(m);
+            }
+        }
+        return methodName;
+    }
+
+    public static boolean isMField(String fieldName) {
+
+        return Pattern.compile(PATTERN_M).matcher(fieldName).matches();
+    }
+
+    public static String upFirstLetter(String str) {
+
+        if (null != str && str.length() > 0) {
+            String top = str.substring(0, 1).toUpperCase();
+            return str.length() > 1 ? top.concat(str.substring(1)) : top;
+        }
+        return str;
+    }
+
+
+    public static String lowerFirstLetter(String str) {
+
+        if (null != str && str.length() > 0) {
+            String top = str.substring(0, 1).toLowerCase();
+            return str.length() > 1 ? top.concat(str.substring(1)) : top;
+        }
+        return str;
+    }
 }

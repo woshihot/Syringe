@@ -1,19 +1,19 @@
 package com.zhj.syringe.core;
 
+import android.util.Log;
+
+import com.zhj.syringe.core.attrs.ActionBindMap;
+import com.zhj.syringe.core.attrs.RebindAttrAction;
 import com.zhj.syringe.core.request.BaseRequestParam;
 import com.zhj.syringe.core.request.ObservableFormat;
 import com.zhj.syringe.core.response.BaseHttpSubscriber;
 import com.zhj.syringe.core.response.HttpBean;
-import com.zhj.syringe.core.response.HttpResponseFormat;
 import com.zhj.syringe.core.service.BaseServiceManager;
+import com.zhj.syringe.utils.RxThreadUtils;
+import com.zhj.syringe.utils.SyringeTransformer;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 /**
  * Created by Fred Zhao on 2017/2/28.
  */
@@ -27,7 +27,16 @@ public abstract class BaseHttpHolder {
         mBaseServiceManager = baseServiceManager;
     }
 
-    public void post(boolean isSerial, ObservableFormat observableFormat, BaseRequestParam... baseRequestParams) {
+    public void post(BasePostBuilder builder) {
+
+        post(builder.isSerial, new HolderObservableFormat(builder.mObservableFormat, builder),
+                (BaseRequestParam[]) builder.mBaseRequestParams.toArray(new BaseRequestParam[ builder
+                        .mBaseRequestParams.size() ]));
+    }
+
+
+    private void post(boolean isSerial, HolderObservableFormat observableFormat, BaseRequestParam...
+            baseRequestParams) {
 
         final int length = baseRequestParams.length;
         if (length > 0) {
@@ -35,9 +44,9 @@ public abstract class BaseHttpHolder {
             if (isSerial) method(0, observableFormat, baseRequestParams[ 0 ], baseRequestParams);
             else {
                 ParallelRequestFinish parallelRequestFinish = new ParallelRequestFinish(length);
-                for (int i = 0; i < length; i++) {
+                for (int i = 0; i < length; i++)
                     method(i, observableFormat, baseRequestParams[ i ], parallelRequestFinish);
-                }
+
             }
         }
     }
@@ -46,28 +55,12 @@ public abstract class BaseHttpHolder {
             baseRequestParam, final BaseRequestParam... baseRequestParams) {
 
         final int length = baseRequestParams.length;
-        Observable observable = baseRequestParam.getObservable(mBaseServiceManager);
-        observableFormat.format(observable.subscribeOn(Schedulers.newThread()), i).subscribeOn(AndroidSchedulers
-                .mainThread()).observeOn(AndroidSchedulers.mainThread()).map(new BaseFormatFunc1(baseRequestParam
-                .getHttpResponseFormat())).subscribe(new SerialSubscriberProxy(baseRequestParam, observableFormat,
-                baseRequestParams, length, i));
+        baseRequestParam.getObservable(mBaseServiceManager)
+                .compose(RxThreadUtils.syringe(observableFormat, i, baseRequestParam.getHttpResponseFormat()))
+                .subscribe(new SerialSubscriberProxy(baseRequestParam, observableFormat,
+                        baseRequestParams, length, i));
     }
 
-    class BaseFormatFunc1 implements Func1<Object, HttpBean> {
-
-        private HttpResponseFormat httpResponseFormat;
-
-        public BaseFormatFunc1(HttpResponseFormat httpResponseFormat) {
-
-            this.httpResponseFormat = httpResponseFormat;
-        }
-
-        @Override
-        public HttpBean call(Object o) {
-
-            return httpResponseFormat.formatHttpBean(o);
-        }
-    }
 
     class InsteadSubscriberProxy extends BaseHttpSubscriber {
 
@@ -111,9 +104,11 @@ public abstract class BaseHttpHolder {
             if (length > i + 1)
                 method(i + 1, observableFormat, this.contentRequestParam.getCascadeParamInterface().getCascadeParam
                         (this.requestParams[ i + 1 ], httpBean), this.requestParams);
-            else observableFormat.beforeEnd();
-
+            else {
+                observableFormat.beforeEnd();
+            }
             super.onNext(httpBean);
+            if (length <= i + 1) observableFormat.postComplete();
         }
     }
 
@@ -131,18 +126,19 @@ public abstract class BaseHttpHolder {
         @Override
         public void onNext(HttpBean httpBean) {
 
-            super.onNext(httpBean);
+
             parallelRequestFinish.requestFinish();
             if (parallelRequestFinish.isLast()) observableFormat.beforeEnd();
+            super.onNext(httpBean);
+            if (parallelRequestFinish.isLast()) observableFormat.postComplete();
         }
     }
 
     private void method(int i, final ObservableFormat observableFormat, final BaseRequestParam baseRequestParam, final
     ParallelRequestFinish parallelRequestFinish) {
 
-        observableFormat.format(baseRequestParam.getObservable(mBaseServiceManager).subscribeOn(Schedulers.io())
-                , i).subscribeOn(AndroidSchedulers.mainThread()).observeOn(AndroidSchedulers.mainThread()).map(new
-                BaseFormatFunc1(baseRequestParam.getHttpResponseFormat()))
+        baseRequestParam.getObservable(mBaseServiceManager)
+                .compose(RxThreadUtils.syringe(observableFormat, i, baseRequestParam.getHttpResponseFormat()))
                 .subscribe(new ParallelSubscriberProxy(baseRequestParam, observableFormat, parallelRequestFinish));
     }
 
@@ -178,42 +174,143 @@ public abstract class BaseHttpHolder {
 
         private BaseHttpHolder holder;
 
+        private boolean running;
+
+        private HolderQueue holderQueue;
+
+        private ObservableFormat defaultObservableFormat;
+
         public BasePostBuilder(BaseHttpHolder holder) {
 
             this.holder = holder;
         }
 
-        public T serial() {
+        /**
+         * the requests post one by one
+         *
+         * @return
+         */
+        public synchronized T serial() {
 
-            isSerial = true;
+            if (running) getHolderQueue().order(true);
+            else isSerial = true;
             return (T) this;
         }
 
-        public T parallel() {
+        /**
+         * (default)
+         * all the request post together
+         *
+         * @return
+         */
+        public synchronized T parallel() {
 
-            this.isSerial = false;
+            if (running) getHolderQueue().order(false);
+            else this.isSerial = false;
             return (T) this;
         }
 
-        public T observableFormat(ObservableFormat observableFormat) {
+        /**
+         * Add some matter on the http observable,
+         * and set the matter beforePost、beforeEnd、postComplete
+         *
+         * @param observableFormat
+         * @return
+         */
+        public synchronized T observableFormat(ObservableFormat observableFormat) {
 
-            mObservableFormat = observableFormat;
+            if (running) getHolderQueue().addObservableFormat(observableFormat);
+            else mObservableFormat = observableFormat;
             return (T) this;
         }
 
-        public T addRequest(BaseRequestParam baseRequestParam) {
+        /**
+         * Add a defaultObservableFormat for this holder.
+         * But the observableFormat has a higher priority.
+         *
+         * @param observableFormat
+         * @return
+         */
+        public synchronized T defaultObservableFormat(ObservableFormat observableFormat) {
 
-            if (null == mBaseRequestParams) mBaseRequestParams = new LinkedHashSet<>();
-            mBaseRequestParams.add(baseRequestParam);
+            this.defaultObservableFormat = observableFormat;
             return (T) this;
         }
 
-        public void post() {
+        /**
+         * Add a http request
+         *
+         * @param baseRequestParam
+         * @return
+         */
+        public synchronized T addRequest(BaseRequestParam baseRequestParam) {
 
-            if (null == mObservableFormat) observableFormat(DefaultConfigHolder.getInstance().baseObservableFormat);
+            if (running) getHolderQueue().addRequestParam(baseRequestParam);
+            else {
+                if (null == mBaseRequestParams) mBaseRequestParams = new LinkedHashSet<>();
+                mBaseRequestParams.add(baseRequestParam);
+            }
+            return (T) this;
+        }
+
+        protected <B> B avoidSetter(int tag, B a, B b) {
+
+            if (running) {
+                getHolderQueue().addAttrs(tag, a);
+                return b;
+            } else return a;
+        }
+
+        void reBindAttrs(int tag, Object o) {
+
+            RebindAttrAction action = ActionBindMap.getAction(tag, this);
+            if (null != action) action.call(o);
+        }
+
+
+        private HolderQueue getHolderQueue() {
+
+            if (null == this.holderQueue) this.holderQueue = new HolderQueue();
+            return this.holderQueue;
+        }
+
+        public synchronized void post() {
+
+            if (null == mObservableFormat) observableFormat(null == defaultObservableFormat ? DefaultConfigHolder
+                    .getInstance().baseObservableFormat : defaultObservableFormat);
             if (null == mBaseRequestParams) return;
-            if (null != holder) holder.post(this.isSerial, this.mObservableFormat, mBaseRequestParams.toArray(new
-                    BaseRequestParam[ mBaseRequestParams.size() ]));
+            if (running) getHolderQueue().post();
+            else if (null != holder) {
+                holder.post(this);
+                running = true;
+            }
+        }
+
+        public T compose(SyringeTransformer<T> transformer) {
+
+            return transformer.call((T) this);
+        }
+
+        synchronized void clear() {
+
+
+            mObservableFormat = null;
+            if (null != mBaseRequestParams) {
+                for (BaseRequestParam request : mBaseRequestParams) request.clear();
+                Log.d("BasePostBuilder", "param will null");
+                mBaseRequestParams = null;
+            }
+            running = false;
+            cleanAttr();
+            getHolderQueue().push((T) this);
+        }
+
+        /**
+         * clear the custom attr
+         * if don't the attr will extended by next post
+         */
+        public void cleanAttr() {
+
         }
     }
 

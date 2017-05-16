@@ -95,6 +95,19 @@ public abstract class BaseRequestParam {
         return paths;
     }
 
+    public void clear() {
+
+        this.mBuilder = null;
+        this.url=null;
+        this.paths=null;
+        this.headers=null;
+        this.mCascadeParamInterface=null;
+        this.mHttpRequestFormat=null;
+        this.param = null;
+        this.mHttpSubscriber = null;
+        this.mHttpResponseFormat =null;
+    }
+
     public abstract Observable getObservable(BaseServiceManager baseServiceManager);
 
 

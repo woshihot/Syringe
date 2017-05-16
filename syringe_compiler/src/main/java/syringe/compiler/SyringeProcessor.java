@@ -3,6 +3,7 @@ import com.google.auto.service.AutoService;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -18,12 +19,18 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 
-import syringe.HttpHolerConfig;
+import syringe.BindAttr;
+import syringe.HttpHolderConfig;
 import syringe.Service;
+import syringe.compiler.entity.AttrActionModel;
+import syringe.compiler.entity.AttrModel;
 import syringe.compiler.entity.ConfigClassModel;
 import syringe.compiler.entity.MethodModel;
 import syringe.compiler.entity.ParamModel;
 import syringe.compiler.entity.ServiceModel;
+import syringe.compiler.generator.AttrActionGenerator;
+import syringe.compiler.generator.AttrIdGenerator;
+import syringe.compiler.generator.AttrParseGenerator;
 import syringe.compiler.generator.ConfigGenerator;
 import syringe.compiler.generator.CopyGenerator;
 import syringe.compiler.generator.FileBox;
@@ -55,7 +62,8 @@ public class SyringeProcessor extends AbstractProcessor {
 
         Set<String> types = new LinkedHashSet<>();
         types.add(Service.class.getCanonicalName());
-        types.add(HttpHolerConfig.class.getCanonicalName());
+        types.add(HttpHolderConfig.class.getCanonicalName());
+        types.add(BindAttr.class.getCanonicalName());
         return types;
     }
 
@@ -80,12 +88,44 @@ public class SyringeProcessor extends AbstractProcessor {
         Set<FileBox> fileMap = new LinkedHashSet<>();
         ConfigClassModel configClassModel = parseConfig(roundEnv, fileMap);
         parseService(roundEnv, fileMap, configClassModel);
+        parseAttrs(roundEnv, fileMap);
         writeFile(fileMap);
     }
 
+
+    private void parseAttrs(RoundEnvironment roundEnv, Set<FileBox> fileMap) {
+
+        Set<? extends Element> attrEle = roundEnv.getElementsAnnotatedWith(BindAttr.class);
+        Set<AttrModel> attrModels = new HashSet<>();
+        for (Element element : attrEle) {
+            attrModels.add(new AttrModel(element));
+        }
+        clearAttrs(attrModels);
+        if (attrModels.isEmpty()) return;
+        Set<AttrActionModel> attrActionModels = AttrActionModel.getModels(attrModels);
+        if (attrActionModels.isEmpty()) return;
+
+        fileMap.add(new AttrIdGenerator(attrActionModels));
+        fileMap.add(new AttrActionGenerator(attrActionModels));
+        fileMap.add(new AttrParseGenerator(attrActionModels));
+
+    }
+
+    private void clearAttrs(Set<AttrModel> attrs) {
+
+        Set<AttrModel> delAttrs = new LinkedHashSet<>();
+        Set<String> methodNames = new LinkedHashSet<>();
+        for (AttrModel attrModel : attrs) {
+            if (!attrModel.isNotNull()) delAttrs.add(attrModel);
+            if (!methodNames.add(attrModel.getMethodName())) delAttrs.add(attrModel);
+        }
+        attrs.removeAll(delAttrs);
+    }
+
+
     private ConfigClassModel parseConfig(RoundEnvironment roundEnv, Set<FileBox> fileMap) {
 
-        Set<? extends Element> configElements = roundEnv.getElementsAnnotatedWith(HttpHolerConfig.class);
+        Set<? extends Element> configElements = roundEnv.getElementsAnnotatedWith(HttpHolderConfig.class);
         checkConfig(configElements);
         if (configElements.size() == 1) {
             ConfigClassModel configClassModel = new ConfigClassModel(configElements.iterator().next());

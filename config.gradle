@@ -2,24 +2,19 @@ ext {
     android = [
             compileSdkVersion       : 25,
             buildToolsVersion       : "25.0.1",
-            packageName             : "com.isesol.zhj.cloudfactory",
             minSdkVersion           : 14,
             targetSdkVersion        : 25,
-            androidSupportSdkVersion: "25.0.1",
-            debugVersionCode        : 1,
-            debugVersionName        : "1.0.1",
-            releaseVersionCode      : 1,
-            releaseVersionName      : "1.0.1",
+            androidSupportSdkVersion: "25.1.0",
             testInstrumentationRunne: "android.support.test.runner.AndroidJUnitRunner"
     ]
     version = [
-            retrofit    : "2.1.0",
-            okhttp      : "3.5.0",
-            rxjava      : "1.2.6",
-            rxandroid   : "1.2.1",
+            retrofit : "2.1.0",
+            okhttp   : "3.5.0",
+            rxjava   : "1.2.6",
+            rxandroid: "1.2.1",
     ]
     depend = [
-            "appcompat"                 : "com.android.support:appcompat-v7:${android["androidSupportSdkVersion"]}",
+            "support-annotations"       : "com.android.support:support-annotations:${android["androidSupportSdkVersion"]}",
             "retrofit"                  : "com.squareup.retrofit2:retrofit:${version["retrofit"]}",
             "retrofit-adapter-rxjava"   : "com.squareup.retrofit2:adapter-rxjava:${version["retrofit"]}",
             "retrofit-converter-scalars": "com.squareup.retrofit2:converter-scalars:${version["retrofit"]}",
@@ -32,8 +27,8 @@ ext {
         jintrayName = 'fredzhaowoshihot'
         groupId = 'com.zhj'
         uploadName = 'Syringe'
-        publishVersion = '1.0.0'
-        desc = 'a http holder'
+        publishVersion = '1.0.5'
+        desc = '1.0.4 is Error'
         website = 'https://github.com/woshihot/Syringe'
         licences = ['Apache-2.0']
     }

@@ -1,11 +1,11 @@
 apply plugin: 'com.android.application'
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion rootProject.ext.android["compileSdkVersion"]
+    buildToolsVersion rootProject.ext.android["buildToolsVersion"]
     defaultConfig {
         applicationId "com.zhj.example"
-        minSdkVersion 14
-        targetSdkVersion 22
+        minSdkVersion rootProject.ext.android["minSdkVersion"]
+        targetSdkVersion rootProject.ext.android["targetSdkVersion"]
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -29,11 +29,16 @@ dependencies {
     })
     compile 'com.android.support:appcompat-v7:25.1.1'
     testCompile 'junit:junit:4.12'
-
-    compile 'com.zhj:syringe:1.0.0'
-    annotationProcessor 'com.zhj:syringe-compiler:1.0.0'
+    compile project(':syringe')
+    annotationProcessor project(':syringe_compiler')
+//    compile 'com.zhj:syringe:1.0.4'
+//    annotationProcessor 'com.zhj:syringe-compiler:1.0.4'
     compile 'com.alibaba:fastjson:1.1.56.android'
     compile 'com.squareup.okhttp3:logging-interceptor:3.5.0'
     compile 'com.balysv.materialmenu:material-menu:2.0.0'
+    compile rootProject.ext.depend["retrofit-adapter-rxjava"]
+    compile rootProject.ext.depend["retrofit-converter-scalars"]
+    compile rootProject.ext.depend["retrofit"]
+    compile rootProject.ext.depend["okhttp"]
 }
 

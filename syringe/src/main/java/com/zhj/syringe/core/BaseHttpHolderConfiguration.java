@@ -8,10 +8,26 @@ import com.zhj.syringe.core.response.HttpResponseFormat;
 
 public abstract class BaseHttpHolderConfiguration<T extends BaseHttpHolderConfiguration> {
 
+    /**
+     * format the map to requestParam
+     *
+     * @return
+     */
     public abstract HttpRequestFormat configDefaultHttpRequest();
 
+    /**
+     * format the response object to httpbean
+     *
+     * @return
+     */
     public abstract HttpResponseFormat configDefaultHttpResponse();
 
+    /**
+     * if the request needn't subscriber on the sponsor
+     * setter a default subscriber
+     *
+     * @return
+     */
     public abstract BaseHttpSubscriber configDefaultSubscriber();
 
 }

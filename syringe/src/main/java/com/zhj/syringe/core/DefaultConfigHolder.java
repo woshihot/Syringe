@@ -81,6 +81,11 @@ public class DefaultConfigHolder {
         public void beforeEnd() {
 
         }
+
+        @Override
+        public void postComplete() {
+
+        }
     }
 
 }

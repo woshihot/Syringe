@@ -1,8 +1,11 @@
 package syringe.compiler;
 
 
+import com.squareup.javapoet.TypeName;
+
 import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.lang.model.element.Element;
@@ -13,6 +16,8 @@ import javax.lang.model.element.VariableElement;
 
 import syringe.compiler.entity.MethodModel;
 import syringe.compiler.entity.ServiceModel;
+
+import static syringe.compiler.Constants.BASE_POST_BUILDER_PATH;
 /**
  * Created by jess on 26/09/2016 13:59
  * Contact with jess.yan.effort@gmail.com
@@ -27,7 +32,7 @@ public final class Preconditions {
 
     public static boolean checkMethod(Element element) {
 
-        return element instanceof ExecutableElement;
+        return /*element.getKind() == ElementKind.METHOD &&*/ element instanceof ExecutableElement;
     }
 
     public static boolean checkObservable(ExecutableElement element) {
@@ -37,7 +42,7 @@ public final class Preconditions {
 
     public static boolean checkParam(Element element) {
 
-        return element instanceof VariableElement;
+        return /*element.getKind() == ElementKind.PARAMETER &&*/ element instanceof VariableElement;
     }
 
     public static boolean checkClass(Element element) {
@@ -49,6 +54,26 @@ public final class Preconditions {
 
         return element.getSuperclass().toString().equals(Constants.BASE_CONFIG_PATH) && !element.getModifiers()
                 .contains(Modifier.ABSTRACT);
+    }
+
+    public static boolean isAttrField(Element element) {
+
+        if (!checkParam(element)) return false;
+        if (!checkClass(element.getEnclosingElement())) return false;
+        TypeElement typeElement = (TypeElement) element.getEnclosingElement();
+
+        return typeElement.getSuperclass().toString().equals(BASE_POST_BUILDER_PATH.concat(Constants
+                .addAngleBracket(typeElement.getQualifiedName().toString())));
+    }
+
+
+    public static boolean isAttrMethod(ExecutableElement element, String builderName, String attrType) {
+
+        List<? extends VariableElement> params = element.getParameters();
+        if (null == params || params.isEmpty() || params.size() != 1) return false;
+
+        return element.getReturnType().toString().equals(builderName)
+                && TypeName.get(params.get(0).asType()).toString().equals(attrType);
     }
 
     public static boolean hasDefaultAndOnly(Set<ServiceModel> models) {
@@ -80,7 +105,6 @@ public final class Preconditions {
 
         return Arrays.asList(retrofitAnnotations).contains(annotationName);
     }
-
 
 
 }

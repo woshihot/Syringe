@@ -246,7 +246,6 @@ public class RequestParamGenerator extends FileBox {
     }
 
     public static ClassName configRequestParamClassName(String packageName) {
-
         return ClassName.get(packageName, Constants.REQUEST_PARAM_NAME);
     }
 

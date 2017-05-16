@@ -27,6 +27,7 @@ public class MethodModel {
     public MethodModel(Element methodElement) {
 
         mElement = methodElement;
+
         if (isMethodAdopt()) {
             this.methodName = methodElement.getSimpleName().toString();
             mParamModels = new LinkedHashSet<>();

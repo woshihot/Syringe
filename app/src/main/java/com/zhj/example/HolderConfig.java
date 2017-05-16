@@ -10,9 +10,12 @@ import com.zhj.syringe.core.response.HttpBean;
 import com.zhj.syringe.core.response.HttpResponseFormat;
 
 import java.util.Map;
+
+import syringe.HttpHolderConfig;
 /**
  * Created by Fred Zhao on 2017/3/6.
  */
+@HttpHolderConfig
 public class HolderConfig extends BaseHttpHolderConfiguration {
 
     @Override
@@ -22,7 +25,7 @@ public class HolderConfig extends BaseHttpHolderConfiguration {
 
             @Override
             public Object formatApiParam(Map param) {
-
+                Log.d("HolderConfig&Post", JSON.toJSONString(param));
                 return param;
             }
         };

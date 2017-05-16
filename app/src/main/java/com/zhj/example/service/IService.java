@@ -11,6 +11,7 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 import retrofit2.http.QueryMap;
 import rx.Observable;
+import syringe.DefaultPost;
 import syringe.Service;
 /**
  * Created by Fred Zhao on 2017/3/2.
@@ -20,9 +21,11 @@ public interface IService {
 
     public static final String ISERVICE_NAME = "iService";
 
+    @DefaultPost
     @GET(ISERVICE_NAME + "/get")
     Observable<String> get();
 
+    @DefaultPost
     @POST(ISERVICE_NAME + "/post")
     Observable<String> post();
 

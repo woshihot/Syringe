@@ -16,4 +16,5 @@ public abstract class BaseHttpSubscriber extends Subscriber<HttpBean> {
         onNext(new HttpBean.DefaultErrorHttpBean(e.getMessage()));
     }
 
+
 }
