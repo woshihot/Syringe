@@ -9,7 +9,6 @@ import com.alibaba.fastjson.JSON;
 import com.zhj.example.service.IServiceType;
 import com.zhj.example.service.RequestParam;
 import com.zhj.example.service.RequestParamBuilder;
-import com.zhj.example.service.TService;
 import com.zhj.syringe.core.request.HttpRequestFormat;
 import com.zhj.syringe.core.request.ObservableFormat;
 import com.zhj.syringe.core.response.BaseHttpSubscriber;
@@ -64,6 +63,12 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
+            public void onError(Throwable e) {
+
+                Log.d("MainActivity", "error : "+e.getMessage());
+            }
+
+            @Override
             public void postComplete() {
 
                 Log.d("MainActivity", "postComplete");
@@ -74,20 +79,14 @@ public class MainActivity extends AppCompatActivity {
 
     public void post(View view) {
         holder.addRequest(lod(RequestParam.newBuilder().service(IServiceType.CLASS).post()).build()).noInternetAction
-                ("post").post();
-        holder.addRequest(lod(RequestParam.newBuilder().service(IServiceType.CLASS).get()).build()).noInternetAction
-                ("get").post();
-        holder.addRequest(lod(RequestParam.newBuilder().service(IServiceType.CLASS).post()).build()).noInternetAction
-                ("post").post();
-        holder.addRequest(lod(RequestParam.newBuilder().service(IServiceType.CLASS).get()).build()).noInternetAction
-                ("get").post();
-        holder.addRequest(lod(RequestParam.newBuilder().service(IServiceType.CLASS).post()).build()).noInternetAction
-                ("post").post();
-        holder.addRequest(lod(RequestParam.newBuilder().service(IServiceType.CLASS).get()).build()).noInternetAction
-                ("get").post();
-        holder.addRequest(lod(RequestParam.newBuilder().service(IServiceType.CLASS).post()).build()).noInternetAction
-                ("post").post();
-        holder.addRequest(lod(RequestParam.newBuilder().service(IServiceType.CLASS).get()).build()).noInternetAction
+                ("post")
+                .addRequest(lod(RequestParam.newBuilder().service(IServiceType.CLASS).get()).build()).noInternetAction
+                ("get").addRequest(lod(RequestParam.newBuilder().service(IServiceType.CLASS).post()).build()).noInternetAction
+                ("post").addRequest(lod(RequestParam.newBuilder().service(IServiceType.CLASS).get()).build()).noInternetAction
+                ("get").addRequest(lod(RequestParam.newBuilder().service(IServiceType.CLASS).post()).build()).noInternetAction
+                ("post").addRequest(lod(RequestParam.newBuilder().service(IServiceType.CLASS).get()).build()).noInternetAction
+                ("get").addRequest(lod(RequestParam.newBuilder().service(IServiceType.CLASS).post()).build()).noInternetAction
+                ("post").addRequest(lod(RequestParam.newBuilder().service(IServiceType.CLASS).get()).build()).noInternetAction
                 ("get").post();
 
     }

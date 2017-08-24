@@ -110,5 +110,4 @@ public abstract class BaseRequestParam {
 
     public abstract Observable getObservable(BaseServiceManager baseServiceManager);
 
-
 }

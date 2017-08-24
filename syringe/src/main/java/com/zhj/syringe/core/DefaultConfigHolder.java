@@ -83,6 +83,11 @@ public class DefaultConfigHolder {
         }
 
         @Override
+        public void onError(Throwable e) {
+
+        }
+
+        @Override
         public void postComplete() {
 
         }

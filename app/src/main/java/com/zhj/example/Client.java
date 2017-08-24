@@ -13,7 +13,7 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class Client {
 
-    public static final String BASE_URL = "https://private-83a99d-syringetest.apiary-mock.com/";
+    public static final String BASE_URL = "https://private-83a99d-syringetest.apiary-mck.com/";
 
 
     private static Client instance;

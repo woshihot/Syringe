@@ -38,6 +38,12 @@ public class HolderObservableFormat implements ObservableFormat {
     }
 
     @Override
+    public void onError(Throwable e) {
+        mObservableFormat.onError(e);
+        mBuilder.clear();
+    }
+
+    @Override
     public void postComplete() {
 
         mObservableFormat.postComplete();

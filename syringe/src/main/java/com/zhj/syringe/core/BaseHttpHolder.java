@@ -1,7 +1,5 @@
 package com.zhj.syringe.core;
 
-import android.util.Log;
-
 import com.zhj.syringe.core.attrs.ActionBindMap;
 import com.zhj.syringe.core.attrs.RebindAttrAction;
 import com.zhj.syringe.core.request.BaseRequestParam;
@@ -78,6 +76,13 @@ public abstract class BaseHttpHolder {
         public void onNext(HttpBean httpBean) {
 
             contentRequestParam.getHttpSubscriber().onNext(httpBean);
+        }
+
+        @Override
+        public void onError(Throwable e) {
+
+            super.onError(e);
+            observableFormat.onError(e);
         }
     }
 
@@ -297,7 +302,6 @@ public abstract class BaseHttpHolder {
             mObservableFormat = null;
             if (null != mBaseRequestParams) {
                 for (BaseRequestParam request : mBaseRequestParams) request.clear();
-                Log.d("BasePostBuilder", "param will null");
                 mBaseRequestParams = null;
             }
             running = false;

@@ -13,7 +13,6 @@ public abstract class BaseHttpSubscriber extends Subscriber<HttpBean> {
     @Override
     public void onError(Throwable e) {
 
-        onNext(new HttpBean.DefaultErrorHttpBean(e.getMessage()));
     }
 
 

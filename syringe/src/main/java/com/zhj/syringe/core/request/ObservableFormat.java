@@ -13,5 +13,7 @@ public interface ObservableFormat {
 
     void beforeEnd();
 
+    void onError(Throwable e);
+
     void postComplete();
 }
