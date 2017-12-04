@@ -76,6 +76,11 @@ public class HolderQueue {
         if (mAvoidHolders.getLast().post) mAvoidHolders.add(new AvoidHolder());
     }
 
+    void clear() {
+
+        if (null != mAvoidHolders) mAvoidHolders.clear();
+    }
+
     class AvoidHolder {
 
         private boolean post;

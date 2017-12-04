@@ -12,6 +12,7 @@ import com.zhj.syringe.utils.SyringeTransformer;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+
 /**
  * Created by Fred Zhao on 2017/2/28.
  */
@@ -258,7 +259,7 @@ public abstract class BaseHttpHolder {
             return (T) this;
         }
 
-        protected <B> B avoidSetter(int tag, B a, B b) {
+        public final <B> B avoidSetter(int tag, B a, B b) {
 
             if (running) {
                 getHolderQueue().addAttrs(tag, a);
@@ -291,13 +292,18 @@ public abstract class BaseHttpHolder {
             }
         }
 
-        public T compose(SyringeTransformer<T> transformer) {
+        public final T compose(SyringeTransformer<T> transformer) {
 
             return transformer.call((T) this);
         }
 
         synchronized void clear() {
 
+            resetBuilder();
+            getHolderQueue().push((T) this);
+        }
+
+        public final void resetBuilder() {
 
             mObservableFormat = null;
             if (null != mBaseRequestParams) {
@@ -306,7 +312,11 @@ public abstract class BaseHttpHolder {
             }
             running = false;
             cleanAttr();
-            getHolderQueue().push((T) this);
+        }
+
+        public final void resetQueue() {
+
+            if (null != this.holderQueue) this.holderQueue.clear();
         }
 
         /**

@@ -44,6 +44,9 @@ public class HttpHolder extends BaseHttpHolder {
 
             return mNoInternetAction;
         }
+
+
+
     }
 
 }
