@@ -32,9 +32,9 @@ public class RequestParamGenerator extends FileBox {
 
     private final String _CODE_FIELD_NAME_methodType = "mMethodType";
 
-    private final String _CODE_METHOD_NAME_newBuilder = "newBuilder";
-
-    private final String _CODE_PARAM_NAME_builder = "builder";
+//    private final String _CODE_METHOD_NAME_newBuilder = "newBuilder";
+//
+//    private final String _CODE_PARAM_NAME_builder = "builder";
 
     private final String _CODE_PARAM_NAME_serviceManager = "serviceManager";
 
@@ -64,7 +64,7 @@ public class RequestParamGenerator extends FileBox {
         TypeSpec.Builder result = TypeSpec.classBuilder(getClassName()).addModifiers(Modifier.PUBLIC).superclass
                 (parent);
         MethodSpec.Builder constructorMethod = MethodSpec.constructorBuilder().addModifiers(Modifier.PUBLIC);
-        MethodSpec.Builder builderMethod = MethodSpec.methodBuilder(_CODE_METHOD_NAME_newBuilder).addModifiers
+        MethodSpec.Builder builderMethod = MethodSpec.methodBuilder(Constants.NEW_BUILDER_NAME).addModifiers
                 (Modifier.PUBLIC).addModifiers(Modifier.STATIC).returns(ClassName.bestGuess(getClassName()
                 .packageName().concat(".").concat(Constants.REQUEST_PARAM_BUILDER_NAME)));
         MethodSpec.Builder overrideMethod = MethodSpec.methodBuilder(REQUEST_PARAM_OVERRIDE_NAME)
@@ -77,9 +77,9 @@ public class RequestParamGenerator extends FileBox {
                 .METHOD_ENUM_CLASS_NAME)), _CODE_FIELD_NAME_methodType, Modifier.PRIVATE, Modifier.FINAL);
 
         constructorMethod.addParameter(ClassName.bestGuess(getClassName().packageName().concat(".").concat(Constants
-                .REQUEST_PARAM_BUILDER_NAME)), _CODE_PARAM_NAME_builder)
-                .addStatement("super($N)", _CODE_PARAM_NAME_builder)
-                .addStatement("this.$N =  $N.getMethodType()", _CODE_FIELD_NAME_methodType, _CODE_PARAM_NAME_builder);
+                .REQUEST_PARAM_BUILDER_NAME)), Constants.BUILDER_NAME)
+                .addStatement("super($N)", Constants.BUILDER_NAME)
+                .addStatement("this.$N =  $N.getMethodType()", _CODE_FIELD_NAME_methodType, Constants.BUILDER_NAME);
 
         builderMethod.addStatement("return new $N()", Constants.REQUEST_PARAM_BUILDER_NAME);
 

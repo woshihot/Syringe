@@ -27,7 +27,7 @@ ext {
         jintrayName = 'fredzhaowoshihot'
         groupId = 'com.zhj'
         uploadName = 'Syringe'
-        publishVersion = '1.0.8'
+        publishVersion = '1.0.9'
         desc = 'resolve the onErrorFailedException'
         website = 'https://github.com/woshihot/Syringe'
         licences = ['Apache-2.0']

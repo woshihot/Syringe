@@ -78,6 +78,8 @@ public class Constants {
 
     public static final String SERVICE_MANAGER_PARENT_NAME = "BaseServiceManager";
 
+    public static final String SERVICE_MANAGER_BUILDER_NAME = "ServiceManagerBuilder";
+
     public static final String REQUEST_PARAM_NAME = "RequestParam";
 
     public static final String REQUEST_PARAM_BUILDER_NAME = "RequestParamBuilder";
@@ -90,6 +92,9 @@ public class Constants {
 
     public static final String REQUEST_PARAM_BUILDER_PARENT_NAME = "BaseRequestParamBuilder";
 
+    public static final String NEW_BUILDER_NAME = "newBuilder";
+
+    public static final String BUILDER_NAME = "builder";
 
     public static final String BASE_FIELD_REQUEST_FORMAT = "baseHttpRequestFormat";
 
@@ -99,11 +104,11 @@ public class Constants {
 
     public static final String ATTR_ACTIONS_MAP_NAME = "AttrActionMap";
 
-    public static final String ATTR_ACTION_PARSE_NAME="AttrActionParse";
+    public static final String ATTR_ACTION_PARSE_NAME = "AttrActionParse";
 
-    public static final String UNBIND_ATTR_ACTION_NAME="UnbindAction";
+    public static final String UNBIND_ATTR_ACTION_NAME = "UnbindAction";
 
-    public static final String ATTR_BIND_PARSE_NAME=SYRINGE_PACKAGE.concat(".core.attrs.ActionMapParse");
+    public static final String ATTR_BIND_PARSE_NAME = SYRINGE_PACKAGE.concat(".core.attrs.ActionMapParse");
 
     public static final String REBIND_ACTION_NAME = SYRINGE_PACKAGE.concat(".core.attrs.RebindAttrAction");
 

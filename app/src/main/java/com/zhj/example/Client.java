@@ -1,4 +1,5 @@
 package com.zhj.example;
+import com.zhj.example.service.IService;
 import com.zhj.example.service.ServiceManager;
 import com.zhj.example.service.TService;
 
@@ -28,15 +29,20 @@ public class Client {
 
     public Client() {
 
-        OkHttpClient mOkHttpClient = new OkHttpClient.Builder().addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)).build();
+        OkHttpClient mOkHttpClient = new OkHttpClient.Builder().addInterceptor(new HttpLoggingInterceptor().setLevel
+                (HttpLoggingInterceptor.Level.BODY)).build();
         Retrofit mRetrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .addConverterFactory(ScalarsConverterFactory.create())
                 .client(mOkHttpClient)
                 .build();
-        ServiceManager serviceManager = new ServiceManager(mRetrofit.create(com.zhj
-                .example.service.IService.class), mRetrofit.create(TService.class));
+
+        ServiceManager serviceManager = new ServiceManager(mRetrofit.create(IService.class), mRetrofit.create(TService.class));
+        ServiceManager newManager = ServiceManager.newBuilder()
+                .iService(mRetrofit.create(IService.class))
+                .tService(mRetrofit.create(TService.class))
+                .build();
         mHttpHolder = new HttpHolder(serviceManager);
     }
 
